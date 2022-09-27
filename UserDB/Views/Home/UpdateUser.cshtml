@@ -1,17 +1,25 @@
 ﻿@model UserViewModel
 
-<div class = "card col-md-12">
-    <form asp-action="AddUser" asp-controller = "Home" method="post">
+<div> 
+    <p>Айди редактируемого пользователя @Model.Id</p>
+    <form asp-controller="Home" asp-action="UpdateUser">
         <div asp-validation-summary= "All"></div>
         <div class = "mb-3">
-            <label class="form-label">Name</label>
+            <label class="form-label">Имя</label>
             <input type="text" asp-for="Name" class="form-control" />
         </div>
                 <div class = "mb-3">
-            <label class="form-label">Password</label>
+            <label class="form-label">Пароль</label>
             <input type="text" asp-for="Password" class="form-control" />
         </div>
 
-        <button type="submit">Добавить пользователя</button>
+        <button type="submit">Изменить</button>
+
+
     </form>
+
+
 </div>
+
+
+

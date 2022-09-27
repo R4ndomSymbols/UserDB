@@ -3,6 +3,9 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Ссылки на запросы</h1>
+    <p>Добавить пользователя <a asp-controller="Home" asp-action="AddUser">ссылка</a>.</p>
+    <p>Посмотреть пользователя <a asp-controller="Home" asp-action="GetUser" asp-route-id = "1">ссылка</a>.</p>
+    <p>Обновить пользователя <a asp-controller="Home" asp-action="UpdateUser" asp-route-id = "1">ссылка</a>.</p>
+    <p>Удаление пользователя <a asp-controller="home" asp-action="deleteUser" id = 0>ссылка(по умолчанию id 0)</a></p>
 </div>

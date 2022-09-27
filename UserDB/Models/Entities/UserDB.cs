@@ -5,55 +5,73 @@ namespace UserDB.Models.Entities
 {
     public class UserDB
     {
-        private static string _path = @"‪E:\Data\users.txt";
+        private static string _path = @"Data\users.txt";
+        private static string _pathToConfig = @"Data\config.txt";
         private static int _currentId;
         private static SHA256 hashAlg = SHA256.Create();
 
+        static UserDB()
+        {
+            Directory.SetCurrentDirectory(@"E:\");
+            _currentId = Convert.ToInt32(File.ReadAllLines(_pathToConfig)[0]);
+        }
 
         public static void WriteToFile(UserViewModel model)
         {
             _currentId++;
+
+            File.WriteAllText(_pathToConfig, _currentId.ToString());
+
             model.Id = _currentId;
-            using (StreamWriter sw = new StreamWriter(Path.GetFullPath(_path)))
+            using (FileStream fs = new FileStream(_path, FileMode.Open))
             {
-                sw.WriteLine(ModelToString(model));
+                fs.Position = fs.Length;
+                using (StreamWriter sw = new StreamWriter(fs))
+                {
+                    sw.WriteLine(ModelToString(model));
+                }
             }
         }
 
         public static UserViewModel CreateFromFile(int id)
         {
-            string target = string.Empty;
-            using(StreamReader stream = new StreamReader(Path.GetFullPath(_path)))
+
+            var lines = File.ReadAllLines(_path);
+            var targetLine = lines.Where(line => line.Contains("id: " + id.ToString()));
+
+            if (targetLine.Count() == 0)
             {
-                try
-                {
-                    do
-                    {
-                        target = stream.ReadLine();
-                    }
-                    while (!stream.EndOfStream && !target.Contains("id: "+ id.ToString()));
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException();
-                }
+                return null;
 
             }
-            var data = target.Split(' ');
-            return new UserViewModel(Convert.ToInt32(data[1]), data[2], data[3]);
+            else
+            {
+                var t = targetLine.ToArray()[0].Split(" ");
+                return new UserViewModel(Convert.ToInt32(t[1]), t[2], t[3]);
+            }
 
         }
 
+        public static void OverrideUser(UserViewModel us)
+        {
+            var lines = File.ReadAllLines(_path);
+            var targetLineChanged = lines.Select(line => line.Contains("id: " + us.Id.ToString())
+            ? ModelToString(us) : line);
+            File.WriteAllLines(_path, targetLineChanged);
+        }
 
+        public static void DeleteUser(int id)
+        {
+            var lines = File.ReadAllLines(_path);
+            var ltargetLineExcluded = lines.Where(line => !line.Contains("id: " + id.ToString()));
+            File.WriteAllLines(_path, ltargetLineExcluded);
+        }
 
         private static string ModelToString(UserViewModel user)
         {
             var hash = hashAlg.ComputeHash(Encoding.Unicode.GetBytes(user.Password));
-            return "id: " + user.Id + " " + user.Name + " " + string.Join("", hash.Select(x => $"{x : X2}"));
+            return "id: " + user.Id + " " + user.Name + " " + string.Join("", hash.Select(x => $"{x:X2}"));
             
         } 
-
-
-
     }
 }

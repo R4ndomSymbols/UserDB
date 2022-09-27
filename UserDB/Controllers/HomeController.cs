@@ -32,10 +32,18 @@ namespace UserDB.Controllers
         [HttpGet]
         public IActionResult GetUser(int id)
         {
-            return View(Models.Entities.UserDB.CreateFromFile(id));
+            var t = Models.Entities.UserDB.CreateFromFile(id);
+            if (t == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return View(t);
+            }
         }
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult AddUser()
         {
             return View();
@@ -52,6 +60,36 @@ namespace UserDB.Controllers
             return View(model);
 
         }
+        [HttpGet]
+        public IActionResult UpdateUser(int id)
+        {
+           return  View(Models.Entities.UserDB.CreateFromFile(id));
+        }
+
+
+        [HttpPost]
+        public IActionResult UpdateUser(UserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Models.Entities.UserDB.OverrideUser(model);
+                return RedirectToAction("Index");
+            }
+            return View(model);
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteUser()
+        {
+            return View();
+        }
+        public IActionResult DeleteUser(int id)
+        {
+            Models.Entities.UserDB.DeleteUser(id);
+            return View(id);
+        }
+
+
 
 
 
